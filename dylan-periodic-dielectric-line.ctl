@@ -12,18 +12,18 @@
 (define-param sz2 1) ; size of eps2 segments
 (define-param Nseg 4) ; number of each segment (2*N total segments)
 
-; The cell dimensions
-(define-param sy 6) ; size of cell in y direction (perpendicular to wvg.)
-(define-param pad 2) ; padding between last hole and PML edge
-(define-param dpml 1) ; PML thickness
+; The simulation cell dimensions
+(define-param sy 10) ; size of cell in y direction (parallel to dielectric strip)
+(define-param sx 6) ; size of cell in x direction (perp to dielectric strip)
 
-(define sx (+ (* 2 (+ pad dpml N)) d -1)) ; size of cell in x direction
+; build the cell
 (set! geometry-lattice (make lattice (size sx sy no-size)))
 
+; build the geometry
 (set! geometry
       (append ; combine lists of objects:
        (list (make block (center 0 0) (size infinity w infinity)
-		   (material (make dielectric (epsilon eps)))))
+		   (material (make dielectric (epsilon eps1)))))
        (geometric-object-duplicates (vector3 1 0) 0 (- N 1)
 	(make cylinder (center (/ d 2) 0) (radius r) (height infinity)
 	      (material air)))
@@ -31,6 +31,7 @@
 	(make cylinder (center (/ d -2) 0) (radius r) (height infinity)
 	      (material air)))))
 
+; do other stuff
 (set! pml-layers (list (make pml (thickness dpml))))
 (set-param! resolution 20)
 
