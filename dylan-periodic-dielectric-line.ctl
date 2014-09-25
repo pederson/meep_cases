@@ -11,6 +11,7 @@
 (define-param sz1 2) ; size of eps1 segments
 (define-param sz2 2) ; size of eps2 segments
 (define-param Nseg 8) ; number of each segment (2*N total segments)
+(define-param wlen sz1) ; wavelength of the source
 
 ; The computational cell dimensions
 (define-param sy (+ (* Nseg sz1) (* Nseg sz2))) ; size of cell in y direction (parallel to dielectric strip)
@@ -46,7 +47,7 @@
 ; set a continuous source
 (set! sources (list
 	     (make source
-	       (src (make continuous-src (wavelength (* 2 (sqrt 12))) (width 20)))
+	       (src (make continuous-src (wavelength wlen) (width 20)))
 	       (component Ez) (center (+ 0.5 (/ sx -2)) 0) (size 0 1))))
 
 ;(set! symmetries
