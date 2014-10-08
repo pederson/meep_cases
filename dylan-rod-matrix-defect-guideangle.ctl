@@ -73,7 +73,7 @@
 (set! pml-layers (list (make pml (thickness dpml))))
 
 ; set resolution (pixels per unit distance)
-(set-param! resolution 10)
+(set-param! resolution 20)
 
 ; define parameters related to the input pulse
 (define-param freq 0.25) ; pulse center frequency                            
