@@ -1,4 +1,4 @@
-; 2-d ring resonator modes with an air gap
+; 2-d split ring resonator concentric
 
 ; some preliminary definitions
 (define split_right 0);
@@ -9,22 +9,22 @@
 ;;;;;;;;;;;;;;;;; user-defined stuff ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; geometry
 (define-param split_loc split_top); 
-(define-param n 3.4) ; index of waveguide
+(define-param eps 100) ; dielectric of waveguide
 (define-param w 1) ; width of waveguide
 (define-param r 2) ; inner radius of ring
 (define-param res 30) ; grid points per unit length
 (define-param pad 2) ; padding between waveguide and edge of PML
 (define-param dpml 1) ; thickness of PML
 
-; source
-(define-param wlen (* 10 r)) ; wavelength
+; for continuous source
+(define-param wlen (* 5 r)) ; wavelength
 
 ; for gaussian pulse
 (define-param fcen 0.25) ; center frequency
 (define-param df 0.1) ; frequency spread
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define sxy (* 2 (+ r w pad dpml))) ; cell size
+(define sxy (+ (* 2 (+ r w pad dpml)) 2)) ; cell size
 (set! geometry-lattice (make lattice (size sxy sxy no-size)))
 
 ; Create a ring waveguide by two overlapping cylinders - later objects
@@ -34,7 +34,7 @@
 (if (= split_loc split_left)
 	(set! geometry (list
 		(make cylinder (center 0 0) (height infinity)
-		      (radius (+ r w)) (material (make dielectric (index n))))
+		      (radius (+ r w)) (material (make dielectric (epsilon eps))))
 		(make cylinder (center 0 0) (height infinity)
 		      (radius r) (material air))
 		(make block (center (- 0 (+ r (/ w 2))) 0 ) (size (* 2 w) w infinity) (material air))
@@ -44,7 +44,7 @@
 (if (= split_loc split_right)
 	(set! geometry (list
 		(make cylinder (center 0 0) (height infinity)
-		      (radius (+ r w)) (material (make dielectric (index n))))
+		      (radius (+ r w)) (material (make dielectric (epsilon eps))))
 		(make cylinder (center 0 0) (height infinity)
 		      (radius r) (material air))
 		(make block (center (+ 0 (+ r (/ w 2))) 0 ) (size (* 2 w) w infinity)
@@ -55,10 +55,18 @@
 (if (= split_loc split_top)
 	(set! geometry (list
 		(make cylinder (center 0 0) (height infinity)
-		      (radius (+ r w)) (material (make dielectric (index n))))
+		      (radius (+ r w)) (material (make dielectric (epsilon eps))))
 		(make cylinder (center 0 0) (height infinity)
 		      (radius r) (material air))
 		(make block (center 0  (+ 0 (+ r (/ w 2)))) (size w (* 2 w) infinity)
+                      (material air))
+		
+
+		(make cylinder (center 0 0) (height infinity)
+		      (radius (- r (/ w 4))) (material (make dielectric (epsilon eps))))
+		(make cylinder (center 0 0) (height infinity)
+		      (radius (- r (* 5 (/ w 4)))) (material air))
+		(make block (center 0 (- 0 (- r (* 3 (/ w 4))))) (size w (* 1.1  w) infinity)
                       (material air))
 		)
 	)
@@ -66,7 +74,7 @@
 (if (= split_loc split_bottom)
 	(set! geometry (list
 		(make cylinder (center 0 0) (height infinity)
-		      (radius (+ r w)) (material (make dielectric (index n))))
+		      (radius (+ r w)) (material (make dielectric (epsilon eps))))
 		(make cylinder (center 0 0) (height infinity)
 		      (radius r) (material air))
 		(make block (center 0 (- 0 (+ r (/ w 2)))) (size w (* 2 w) infinity)
