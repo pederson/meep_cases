@@ -1,4 +1,4 @@
-; 2-d split ring resonator concentric
+; 2-d array of split ring resonators
 
 ; some preliminary definitions
 (define split_right 0);
@@ -8,6 +8,8 @@
 
 ;;;;;;;;;;;;;;;;; user-defined stuff ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; geometry
+(define-param nrows 2); number of rows
+(define-param ncols 2); number of columns
 (define-param split_loc split_bottom); 
 (define-param eps 100) ; dielectric of waveguide
 (define-param w 1) ; width of waveguide
@@ -25,7 +27,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define sxy (+ (* 2 (+ r w pad dpml)) 2)) ; cell size
-(set! geometry-lattice (make lattice (size sxy sxy no-size)))
+(set! geometry-lattice (make lattice (size (* 2 ncols sxy) (* 2 nrows sxy) no-size)))
 
 ; Create a ring waveguide by two overlapping cylinders - later objects
 ; take precedence over earlier objects, so we put the outer cylinder first.
@@ -88,7 +90,10 @@
 	)
 )
 (if (= split_loc split_bottom)
-	(set! geometry (list
+	(set! geometry (append
+		(geometric-object-duplicates (vector3 (* 3 r) 0 0) 0 ncols
+		(geometric-object-duplicates (vector3 0 (* 3 r) 0) 0 nrows
+		(list
 		(make cylinder (center 0 0) (height infinity)
 		      (radius (+ r w)) (material (make dielectric (epsilon eps))))
 		(make cylinder (center 0 0) (height infinity)
@@ -103,6 +108,9 @@
 		      (radius (- r (* 5 (/ w 4)))) (material air))
 		(make block (center 0 (+ 0 (- r (* 3 (/ w 4))))) (size w (* 1.1  w) infinity)
                       (material air))
+		)
+		)
+		)
 		)
 	)
 )
