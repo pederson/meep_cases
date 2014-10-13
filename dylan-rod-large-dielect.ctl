@@ -1,18 +1,19 @@
 ; Dylan Pederson
-; matrix of rods
+; large dielectric rod with a couple dielectrics at a 30 degree angle 
 
 ; This is a test case for a wave incident perpendicularly on a periodic
 ; dielectric line of material
 
 ; Some parameters to describe the geometry:
-(define-param eps 6) ; dielectric constant of rod
+(define-param eps 6) ; dielectric constant of small dielectrics
+(define-param disize 0.5); size of dielectrics
 (define-param rrod 5) ; radius of rod
 (define-param rodspace 3) ; center-to-center distance between rods
 (define-param Nrows 1) ; number of rods in a column
 (define-param wlen 2) ; wavelength of the source
 
 ; The computational cell dimensions
-(define-param sy (+ (* Nrows rodspace) (* rrod 2))) ; size of cell in y dir
+(define-param sy (+ (* Nrows rodspace) (* rrod 3))) ; size of cell in y dir
 (define-param sx 20) ; size of cell in x dir
 (define-param dpml 1) ; size of pml
 
@@ -27,7 +28,14 @@
        (geometric-object-duplicates (vector3 0 rodspace 0) 0 (- Nrows 1) 
 			(make cylinder (center (* rodspace 0) 0) (radius rrod) (height infinity) (material metal)))
 
-			))
+	(list
+	   ;/------------------ dielectric pieces ------------------------------
+	(make block (center (/ rrod 2) (* rrod 0.866)) (size disize disize infinity) (material (make dielectric (epsilon eps))))
+
+	(make block (center (/ rrod 2) (* rrod -0.866)) (size disize disize infinity) (material (make dielectric (epsilon eps))))
+	)
+	)
+)
 
 ; set perfectly matched layer
 (set! pml-layers (list (make pml (thickness dpml))))
