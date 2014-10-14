@@ -8,7 +8,6 @@
 ; geometry
 (define-param nrows 2); number of rows
 (define-param ncols 2); number of columns
-(define-param split_loc split_bottom); 
 (define-param eps 100) ; dielectric of waveguide
 (define-param w 1) ; width of waveguide
 (define-param r 2) ; inner radius of ring
@@ -24,6 +23,7 @@
 (define-param df 0.1) ; frequency spread
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(display #t)
 
 ;;;;;;;;;;;;;;;;;;;;; CELL BUILDING ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; This will depend on the specific geometry that you build
@@ -35,6 +35,7 @@
 (set! geometry-lattice (make lattice (size sx sy no-size)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(display #t)
 
 ;;;;;;;;;;;;;;;;;;;;; GEOMETRY BUILDING ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Description can go here
@@ -81,7 +82,8 @@
 	)
 	)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-		
+	
+(display #t)	
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; SPECIFY BOUNDARIES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -91,38 +93,50 @@
 ; absorber
 ;(set! pml-layers (list (make absorber (thickness dpml))))
 
+; bloch-periodic
+;(kpoint (vector3 sx sy 0)) 
+;(ensure-periodicity true)
+
+
 (set-param! resolution res)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 
+(display #t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; CURRENT SOURCES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; If we don't want to excite a specific mode symmetry, we can just
-; put a single point source at some arbitrary place, pointing in some
-; arbitrary direction.  We will only look for TM modes (E out of the plane).
 
-
-; set a continuous source
+; continuous source
 (set! sources (list
              (make source
                (src (make continuous-src (wavelength wlen) (width 20)))
                (component Ez) (center (+ 0.5 (/ sxy -2)) 0) (size 0 1))))
 
+; Gaussian source
+;(set! sources (list
+		(make source
+		(src (make gaussian-src (frequency fcen) (fwidth df)))
+		(component Ez) (center src_loc_x src_loc_y) )))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(display #t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; SYMMETRIES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; exploit the mirror symmetry in structure+source:
 ;(set! symmetries (list (make mirror-sym (direction Y))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(display #t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; OUTPUT ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; 
-;(run-until (/ 1 fcen) (at-every (/ 1 fcen 20) output-efield-z))
 
-
+; field patterns
 (run-until 200
 	    (at-beginning output-epsilon)
 	    (to-appended "ez" (at-every 0.3 output-efield-z)))
+
+; transmission Tx and reflection Rx
+
+
+; resonant modes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
