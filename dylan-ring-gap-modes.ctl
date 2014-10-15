@@ -3,9 +3,9 @@
 ;;;;;;;;;;;;;;;;; user-defined stuff ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; geometry
 (define-param eps 11.56) ; dielectric const
-(define-param w 1) ; width of ring
+(define-param w 2) ; width of ring
 (define-param r 4); inner radius of ring
-(define-param res 10) ; grid points per unit length
+(define-param res 30) ; grid points per unit length
 (define-param pad 4) ; padding between waveguide and edge of PML
 (define-param dpml 2) ; thickness of PML
 

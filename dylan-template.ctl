@@ -1,6 +1,12 @@
 ; template for MEEP runs
 
 ;;;;;;;;;;;;;;;;; user-defined stuff ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; type of simulation to run
+(define-param do_modes false); find the modes of the geometry
+(define-param do_tdomain false); run a time-domain simulation
+(define-param do_Tx false); find the transmission spectrum
+(define-param do_Rx false); find the reflection spectrum
+
 ; simulation cell
 (define-param xpad 3); extra space on the left and right sides
 (define-param ypad 3); extra space on the top and bottom sides
@@ -131,12 +137,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; OUTPUT ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; field patterns
-(run-until 200
+(if do_tdomain
+	(run-until 200
 	    (at-beginning output-epsilon)
 	    (to-appended "ez" (at-every 0.3 output-efield-z)))
+)
 
 ; transmission Tx and reflection Rx
+(if do_Tx
 
+)
+(if do_Rx
+
+)
 
 ; resonant modes
+(if do_modes
+		
+)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
