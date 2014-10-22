@@ -1,10 +1,17 @@
 #!/bin/bash
 
+# specify the path to the meep folder
+meepfolder="../meep"
+
+origfolder=`pwd`
+
 # extract the base name
 name=`basename -s .ctl $1`
 
+cd ${meepfolder}
+
 # run meep for the file
-./meep12 fcen=0.4 df=0.35 $1 | tee "${name}.out"
+./meep12 fcen=0.4 df=0.35 "${origfolder}/$1" | tee "${name}.out"
 
 # create the geometry (eps file)
 h5topng -S3 ${name}-eps-000000.00.h5
@@ -17,6 +24,22 @@ numfreq=`wc -l ${name}_frequencies.txt | cut -c 1-2`
 echo "numfreq = $numfreq" 
 
 rm "${name}-ez"*.h5
+
+# move it all to its folder (if it exists)
+if [ -d "${meepfolder}/meep_output/${name}" ]
+then
+  echo "yes, folder exists"
+else
+  echo "no, folder doesn't exist"
+  mkdir "${meepfolder}/meep_output/${name}"
+fi
+
+if [ -d "${meepfolder}/meep_output/${name}/modes" ]
+then
+  echo "bands folder exists"
+else
+  mkdir "${meepfolder}/meep_output/${name}/modes"
+fi
 
 # for each frequency, run meep in a small band
 for (( i=2; i <= numfreq ; i++ ))
@@ -42,3 +65,6 @@ do
   rm "${name}-ez"*.h5
 
 done
+
+# move all the gifs and stuff to the output folder
+mv "${name}"* "meep_output/${name}/modes"
